@@ -5,7 +5,7 @@
 #include <optional>
 #include "configurations.h"
 
-inline std::string bool_to_str(bool val)
+inline std::string bool_to_alpha(bool val)
 {
     return val ? "true" : "false";
 }
@@ -49,7 +49,7 @@ int main()
     std::cout << "exists: " << std::boolalpha << app_config.exists(section, key) << std::endl;
 
     auto bool_config = app_config.get_value<bool>(section, key);
-    auto isInternal  = bool_config.has_value() ? bool_to_str(bool_config.value()) : std::string{ "std::nullopt_t" };
+    auto isInternal  = bool_config.has_value() ? bool_to_alpha(bool_config.value()) : std::string{ "std::nullopt_t" };
     std::cout << "get_value<bool>: " << isInternal << std::endl;
 
     str_config = app_config.get_value<std::string>(section, key);
