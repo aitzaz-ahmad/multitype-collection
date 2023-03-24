@@ -48,16 +48,56 @@ private:
 
 using server_configs = std::unordered_map<std::string, property>;
 
-class configurations {
+class configurations 
+{
 public:
+
+    void insert(property&& config_property);
     void insert(const property& config_property);
+    
     bool exists(const std::string& key) const;
     
     template<class U>
-    std::optional<U> get_value(const std::string& key) const;
+    std::optional<U> get_value(const std::string& key) const {
+
+        if (!exists(key))
+            return std::optional<U>{};
+
+        const auto& config = m_config_properties.at(key);
+        return std::optional{ config.get_as<U>() };
+    }
 
     template<class U>
-    std::optional<U> get_value(const property& config_property) const;
+    std::optional<U> get_value(const property& config_property) const {
+
+        const auto key = config_property.hash_key();
+        if (!exists(key))
+            return std::optional<U>{};
+
+        const auto& config = m_config_properties.at(key);
+        return std::optional{ config.get_as<U>() };
+    }
+
+    template<class U>
+    U get_value_or(const std::string& key, U default_value) const {
+
+        if (!exists(key))
+            return default_value;
+
+        const auto& config = m_config_properties.at(key).get_as<U>();
+        return config.get_value_or(default_value);
+    }
+
+    template<class U>
+    U get_value_or(const property& config_property, U default_value) const {
+
+        const auto key = config_property.hash_key();
+        if (!exists(key))
+            return default_value;
+
+        const auto& config = m_config_properties.at(key).get_as<U>();
+        return config.get_value_or(default_value);
+    }
 
 private:
     server_configs m_config_properties;
