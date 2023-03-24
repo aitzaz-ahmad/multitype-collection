@@ -37,3 +37,6 @@
 x64/*
 Debug/*
 Release/*
+unit-tests/x64/*
+unit-tests/Debug/*
+unit-tests/Release/*
