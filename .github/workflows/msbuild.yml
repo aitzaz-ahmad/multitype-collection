@@ -3,7 +3,7 @@
 # separate terms of service, privacy policy, and support
 # documentation.
 
-name: Build Visual Studio Project
+name: Build & Test Visual Studio Solution
 
 on:
   push:
@@ -14,11 +14,17 @@ on:
 env:
   # Path to the solution file relative to the root of the project.
   SOLUTION_FILE_PATH: .
+  
+  # Path to the unit tests project relative to the root of the project.
+  UNIT_TESTS_DIR: unit-tests
 
   # Configuration type to build.
   # You can convert this to a build matrix if you need coverage of multiple configuration types.
   # https://docs.github.com/actions/learn-github-actions/managing-complex-workflows#using-a-build-matrix
   BUILD_CONFIGURATION: Release
+  
+  # Target platform to build for.
+  BUILD_PLATFORM: x64
 
 permissions:
   contents: read
@@ -43,4 +49,11 @@ jobs:
       working-directory: ${{env.GITHUB_WORKSPACE}}
       # Add additional options to the MSBuild command line here (like platform or verbosity level).
       # See https://docs.microsoft.com/visualstudio/msbuild/msbuild-command-line-reference
-      run: msbuild /m /p:Configuration=${{env.BUILD_CONFIGURATION}} ${{env.SOLUTION_FILE_PATH}}
+      run: msbuild /m /p:Configuration=${{env.BUILD_CONFIGURATION}} /p:Platform=${{env.BUILD_PLATFORM}} ${{env.SOLUTION_FILE_PATH}}
+      
+    - name: Add VSTest to PATH
+      uses: darenm/Setup-VSTest@v1.2
+              
+    - name: Test
+      working-directory: ${{env.GITHUB_WORKSPACE}}/${{env.UNIT_TESTS_DIR}}
+      run: vstest.console.exe /Configuration:${{env.BUILD_CONFIGURATION}} /Platform:${{env.BUILD_PLATFORM}} unit-tests.dll
