@@ -1,0 +1,5 @@
+unit-tests/unit-tests.cpp:17:3: error: syntax error [syntaxError]
+  TEST_CLASS_CLEANUP(cleanup)
+  ^
+nofile:0:0: information: Cppcheck cannot find all the include files (use --check-config for details) [missingInclude]
+
