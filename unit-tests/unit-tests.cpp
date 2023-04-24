@@ -164,4 +164,76 @@ namespace unittests
 							 L"emp.last_name != \"Smith\"");
 		}
 	};
+
+	TEST_CLASS(unittests_configurations) {
+
+	public:
+
+		TEST_CLASS_INITIALIZE(initialize)
+		{
+			Logger::WriteMessage("unittests_configurations initialize()");
+		}
+
+		TEST_CLASS_CLEANUP(cleanup)
+		{
+			Logger::WriteMessage("unittests_configurations cleanup()");
+		}
+
+		BEGIN_TEST_METHOD_ATTRIBUTE(insert_property_if_unique)
+			TEST_OWNER(L"Aitzaz Ahmad")
+			TEST_DESCRIPTION(L"Only unique properties can be inserted to configurations object")
+		END_TEST_METHOD_ATTRIBUTE()
+		TEST_METHOD(insert_property_if_unique)
+		{
+			Logger::WriteMessage("Running unittests_configurations - insert_property_if_unique");
+
+			auto app_config = configurations{};
+			Assert::IsFalse(app_config.exists("version"));
+			
+			app_config.insert(property{ "version", std::string{"0.1.0"} });
+			Assert::IsTrue(app_config.exists("version"),
+						   L"app_config does not contain any property against the key \"version\"");
+			
+			auto version1 = app_config.get_value<std::string>("version");
+			Assert::IsTrue(version1.value() == "0.1.0", 
+						   L"version mismatch: app_config.get_value<std::string>(\"version\").value() != \"0.1.0\"");
+
+			app_config.insert(property{ "version", std::string{"0.1.1"} });
+			const auto version2 = app_config.get_value<std::string>("version");
+			Assert::IsFalse(version2.value() == "0.1.1", 
+							L"the \"version\" property was overwritten in app_config");
+			Assert::IsTrue(version2.value() == version1.value(),
+						   L"the \"version\" property was overwritten in app_config");
+		}
+
+		BEGIN_TEST_METHOD_ATTRIBUTE(do_not_insert_empty_property)
+			TEST_OWNER(L"Aitzaz Ahmad")
+			TEST_DESCRIPTION(L"do_not_insert_empty_property")
+		END_TEST_METHOD_ATTRIBUTE()
+		TEST_METHOD(do_not_insert_empty_property)
+		{
+			Logger::WriteMessage("Running unittests_configurations - do_not_insert_empty_property");
+			
+			auto app_config = configurations{};
+			const auto empty = property{};
+			app_config.insert(empty);
+
+			Assert::IsFalse(app_config.exists(empty.hash_key()),
+							L"configurations must not allow the insertion of a default-constructed property");
+		}
+
+		BEGIN_TEST_METHOD_ATTRIBUTE(do_not_insert_property_with_empty_key)
+			TEST_OWNER(L"Aitzaz Ahmad")
+			TEST_DESCRIPTION(L"do_not_insert_property_with_empty_key")
+			END_TEST_METHOD_ATTRIBUTE()
+			TEST_METHOD(do_not_insert_property_with_empty_key)
+		{
+			Logger::WriteMessage("Running unittests_configurations - do_not_insert_property_with_empty_key");
+
+			auto app_config = configurations{};
+			app_config.insert(property{ "", std::string{"orphan"} });
+			Assert::IsFalse(app_config.exists(""),
+				L"configurations must not allow the insertion of a property with an empty key");
+		}
+	};
 }
