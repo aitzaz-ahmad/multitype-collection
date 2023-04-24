@@ -3,7 +3,7 @@
 # separate terms of service, privacy policy, and support
 # documentation.
 
-name: Build & Test Visual Studio Solution
+name: MSBuild & Unit Tests
 
 on:
   push:
