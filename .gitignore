@@ -34,6 +34,9 @@
 # Temporary VS Directories and Files
 *.vcxproj.user
 *.vs/*
+*.vscode/*
+*build/*
+Testing/*
 x64/*
 Debug/*
 Release/*
