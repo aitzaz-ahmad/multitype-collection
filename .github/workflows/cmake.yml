@@ -38,6 +38,18 @@ jobs:
           if [[ "$RUNNER_OS" == "macOS" ]]; then
             brew install llvm
             export PATH="$(brew --prefix llvm)/bin:$PATH"
+
+            SDKROOT="$(xcrun --show-sdk-path)"
+            TOOLCHAIN_INCLUDE="$(xcode-select -p)/Toolchains/XcodeDefault.xctoolchain/usr/include/c++/v1"
+
+            clang_tidy_extra_args=(
+              --extra-arg=-isysroot
+              --extra-arg="$SDKROOT"
+              --extra-arg=-isystem
+              --extra-arg="$TOOLCHAIN_INCLUDE"
+            )
+          else
+            clang_tidy_extra_args=()
           fi
 
           files=$(git ls-files '*.cpp')
@@ -47,4 +59,4 @@ jobs:
             exit 0
           fi
 
-          clang-tidy -p build $files
+          clang-tidy -p build "${clang_tidy_extra_args[@]}" $files
