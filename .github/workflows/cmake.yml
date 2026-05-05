@@ -29,3 +29,10 @@ jobs:
 
       - name: Run tests
         run: ctest --test-dir build --output-on-failure
+
+      - name: Run clang-tidy
+        run: |
+            clang-tidy \
+            -p build \
+            $(git ls-files '*.cpp')
+            

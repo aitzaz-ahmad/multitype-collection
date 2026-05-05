@@ -1,0 +1,17 @@
+# Line endings
+* text=auto eol=lf
+
+# Binary files
+*.png binary
+*.jpg binary
+*.pdf binary
+
+# C++ language classification
+*.h   linguist-language=C++
+*.hpp linguist-language=C++
+*.cpp linguist-language=C++
+
+# Ignore in archives
+.github/ export-ignore
+tests/ export-ignore
+build/ export-ignore
