@@ -36,6 +36,7 @@ jobs:
           set -e
 
           if [[ "$RUNNER_OS" == "macOS" ]]; then
+            brew install llvm
             export PATH="$(brew --prefix llvm)/bin:$PATH"
           fi
 
