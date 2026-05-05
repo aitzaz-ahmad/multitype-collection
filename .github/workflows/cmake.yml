@@ -31,5 +31,19 @@ jobs:
         run: ctest --test-dir build --output-on-failure
 
       - name: Run clang-tidy
-        run: clang-tidy -p build $(git ls-files '*.cpp')
-        shell: bash          
+        shell: bash
+        run: |
+          set -e
+
+          if [[ "$RUNNER_OS" == "macOS" ]]; then
+            export PATH="$(brew --prefix llvm)/bin:$PATH"
+          fi
+
+          files=$(git ls-files '*.cpp')
+
+          if [[ -z "$files" ]]; then
+            echo "No C++ source files found."
+            exit 0
+          fi
+
+          clang-tidy -p build $files
