@@ -37,19 +37,18 @@ jobs:
             status=0
 
             echo "======= cppcheck ======="
-            if [[ "$RUNNER_OS" == "Linux" ]]; then
-                cppcheck_data_dir="/usr/share/cppcheck"
-            elif [[ "$RUNNER_OS" == "macOS" ]]; then
-                cppcheck_data_dir="$(brew --prefix cppcheck)/share/Cppcheck"
-            elif [[ "$RUNNER_OS" == "Windows" ]]; then
-                cppcheck_data_dir="$(cygpath 'C:\Program Files\Cppcheck\cfg')"
-            else
-                echo "Unsupported OS: $RUNNER_OS"
-                exit 1
-            fi
+            # if [[ "$RUNNER_OS" == "Linux" ]]; then
+            #     cppcheck_data_dir="/usr/share/cppcheck"
+            # elif [[ "$RUNNER_OS" == "macOS" ]]; then
+            #     cppcheck_data_dir="$(brew --prefix cppcheck)/share/Cppcheck"
+            # elif [[ "$RUNNER_OS" == "Windows" ]]; then
+            #     cppcheck_data_dir="$(cygpath 'C:\Program Files\Cppcheck\cfg')"
+            # else
+            #     echo "Unsupported OS: $RUNNER_OS"
+            #     exit 1
+            # fi
 
             cppcheck \
-                # --data-dir="$cppcheck_data_dir" \
                 --enable=all \
                 --inline-suppr \
                 --error-exitcode=1 \
