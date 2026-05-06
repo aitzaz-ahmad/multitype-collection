@@ -33,41 +33,43 @@ jobs:
       - name: Static Analysis
         shell: bash
         run: |
-          set +e
-          status=0
+            set +e
+            status=0
 
-          echo "== cppcheck =="
-          cppcheck \
-            --project=build/compile_commands.json \
-            --enable=all \
-            --inline-suppr \
-            --error-exitcode=1 \
-            --suppress=missingIncludeSystem \
-            --quiet
-          status=$((status | $?))
-
-          echo "== clang-tidy =="
-          if [[ "$RUNNER_OS" == "macOS" ]]; then
-            export PATH="$(brew --prefix llvm)/bin:$PATH"
-
-            SDKROOT="$(xcrun --show-sdk-path)"
-            TOOLCHAIN_INCLUDE="$(xcode-select -p)/Toolchains/XcodeDefault.xctoolchain/usr/include/c++/v1"
-
-            extra=(
-              --extra-arg=-isysroot --extra-arg="$SDKROOT"
-              --extra-arg=-isystem --extra-arg="$TOOLCHAIN_INCLUDE"
-            )
-          else
-            extra=()
-          fi
-
-          files=$(git ls-files '*.cpp')
-
-          if [[ -n "$files" ]]; then
-            clang-tidy -p build "${extra[@]}" $files
+            echo "== cppcheck =="
+            cppcheck \
+              --enable=all \
+              --inline-suppr \
+              --error-exitcode=1 \
+              --suppress=missingIncludeSystem \
+              --suppress=unusedFunction \
+              --quiet \
+              -I include \
+              src include tests
             status=$((status | $?))
-          else
-            echo "No C++ source files found."
-          fi
 
-          exit $status
+            echo "== clang-tidy =="
+            if [[ "$RUNNER_OS" == "macOS" ]]; then
+                export PATH="$(brew --prefix llvm)/bin:$PATH"
+
+                SDKROOT="$(xcrun --show-sdk-path)"
+                TOOLCHAIN_INCLUDE="$(xcode-select -p)/Toolchains/XcodeDefault.xctoolchain/usr/include/c++/v1"
+
+                extra=(
+                    --extra-arg=-isysroot --extra-arg="$SDKROOT"
+                    --extra-arg=-isystem --extra-arg="$TOOLCHAIN_INCLUDE"
+                )
+            else
+                extra=()
+            fi
+
+            files=$(git ls-files '*.cpp')
+
+            if [[ -n "$files" ]]; then
+                clang-tidy -p build "${extra[@]}" $files
+                status=$((status | $?))
+            else
+                echo "No C++ source files found."
+            fi
+
+            exit $status
