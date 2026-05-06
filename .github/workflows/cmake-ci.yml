@@ -1,0 +1,36 @@
+name: CMake CI
+
+on:
+  workflow_call:
+    inputs:
+      runner:
+        required: true
+        type: string
+
+jobs:
+  cmake-ci:
+    runs-on: ${{ inputs.runner }}
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install build tools
+        shell: bash
+        run: |
+          if [[ "$RUNNER_OS" == "Linux" ]]; then
+            sudo apt-get update
+            sudo apt-get install -y ninja-build
+          elif [[ "$RUNNER_OS" == "macOS" ]]; then
+            brew install ninja
+          elif [[ "$RUNNER_OS" == "Windows" ]]; then
+            choco install ninja -y
+          fi
+
+      - name: Build
+        run: |
+          cmake -S . -B build -G Ninja -DCMAKE_BUILD_TYPE=Debug -DCMAKE_EXPORT_COMPILE_COMMANDS=ON
+          cmake --build build
+
+      - name: Test
+        run: ctest --test-dir build --output-on-failure

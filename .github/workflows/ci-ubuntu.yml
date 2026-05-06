@@ -1,0 +1,21 @@
+name: Ubuntu CI
+
+on:
+  push:
+  pull_request:
+
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+
+jobs:
+  build-test:
+    name: Build and Test
+    uses: ./.github/workflows/cmake-ci.yml
+    with:
+      runner: ubuntu-latest
+
+  static-analysis:
+    name: Static Analysis
+    uses: ./.github/workflows/static-analysis.yml
+    with:
+      runner: ubuntu-latest

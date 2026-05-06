@@ -1,0 +1,73 @@
+name: Static Analysis
+
+on:
+  workflow_call:
+    inputs:
+      runner:
+        required: true
+        type: string
+
+jobs:
+  static-analysis:
+    runs-on: ${{ inputs.runner }}
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install analysis tools
+        shell: bash
+        run: |
+          if [[ "$RUNNER_OS" == "Linux" ]]; then
+            sudo apt-get update
+            sudo apt-get install -y ninja-build cppcheck clang-tidy
+          elif [[ "$RUNNER_OS" == "macOS" ]]; then
+            brew install ninja cppcheck llvm
+          elif [[ "$RUNNER_OS" == "Windows" ]]; then
+            choco install ninja cppcheck llvm -y
+          fi
+
+      - name: Configure
+        run: cmake -S . -B build -G Ninja -DCMAKE_BUILD_TYPE=Debug -DCMAKE_EXPORT_COMPILE_COMMANDS=ON
+
+      - name: Static Analysis
+        shell: bash
+        run: |
+          set +e
+          status=0
+
+          echo "== cppcheck =="
+          cppcheck \
+            --project=build/compile_commands.json \
+            --enable=all \
+            --inline-suppr \
+            --error-exitcode=1 \
+            --suppress=missingIncludeSystem \
+            --quiet
+          status=$((status | $?))
+
+          echo "== clang-tidy =="
+          if [[ "$RUNNER_OS" == "macOS" ]]; then
+            export PATH="$(brew --prefix llvm)/bin:$PATH"
+
+            SDKROOT="$(xcrun --show-sdk-path)"
+            TOOLCHAIN_INCLUDE="$(xcode-select -p)/Toolchains/XcodeDefault.xctoolchain/usr/include/c++/v1"
+
+            extra=(
+              --extra-arg=-isysroot --extra-arg="$SDKROOT"
+              --extra-arg=-isystem --extra-arg="$TOOLCHAIN_INCLUDE"
+            )
+          else
+            extra=()
+          fi
+
+          files=$(git ls-files '*.cpp')
+
+          if [[ -n "$files" ]]; then
+            clang-tidy -p build "${extra[@]}" $files
+            status=$((status | $?))
+          else
+            echo "No C++ source files found."
+          fi
+
+          exit $status

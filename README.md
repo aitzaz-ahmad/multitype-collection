@@ -1,6 +1,8 @@
 # multitype-collection
 
-[![MSBuild & Unit Tests](https://github.com/aitzaz-ahmad/multitype-collection/actions/workflows/msbuild.yml/badge.svg)](https://github.com/aitzaz-ahmad/multitype-collection/actions/workflows/msbuild.yml)
+![Ubuntu](https://github.com/aitzaz-ahmad/multitype-collection/actions/workflows/ci-ubuntu.yml/badge.svg)
+![macOS](https://github.com/aitzaz-ahmad/multitype-collection/actions/workflows/ci-macos.yml/badge.svg)
+![Windows](https://github.com/aitzaz-ahmad/multitype-collection/actions/workflows/ci-windows.yml/badge.svg)
 
 A stub application developed for the PoC of a multi-type key value store.
 
