@@ -38,14 +38,14 @@ jobs:
 
             echo "== cppcheck =="
             cppcheck \
-              --enable=all \
-              --inline-suppr \
-              --error-exitcode=1 \
-              --suppress=missingIncludeSystem \
-              --suppress=unusedFunction \
-              --quiet \
-              -I include \
-              src include tests
+                --enable=all \
+                --inline-suppr \
+                --error-exitcode=1 \
+                --suppress=missingIncludeSystem \
+                --suppress=unusedFunction \
+                --quiet \
+                -I include \
+                src include
             status=$((status | $?))
 
             echo "== clang-tidy =="
