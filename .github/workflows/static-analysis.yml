@@ -15,7 +15,7 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Install analysis tools
+      - name: Install static analysis tools
         shell: bash
         run: |
           if [[ "$RUNNER_OS" == "Linux" ]]; then
@@ -24,7 +24,12 @@ jobs:
           elif [[ "$RUNNER_OS" == "macOS" ]]; then
             brew install ninja cppcheck llvm
           elif [[ "$RUNNER_OS" == "Windows" ]]; then
-            choco install ninja cppcheck llvm -y
+            choco install ninja llvm msys2 -y
+            export PATH="/c/tools/msys64/usr/bin:$PATH"
+            pacman -S --noconfirm mingw-w64-ucrt-x86_64-cppcheck
+            echo "/c/tools/msys64/ucrt64/bin" >> "$GITHUB_PATH"
+            which cppcheck
+            cppcheck --version
           fi
 
       - name: Configure
