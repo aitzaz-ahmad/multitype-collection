@@ -49,13 +49,14 @@ jobs:
             fi
 
             cppcheck \
-                --data-dir="$cppcheck_data_dir" \
+                # --data-dir="$cppcheck_data_dir" \
                 --enable=all \
                 --inline-suppr \
                 --error-exitcode=1 \
                 --suppress=missingIncludeSystem \
                 --suppress=unusedFunction \
                 --quiet \
+                --library=std \
                 -I include \
                 src include
 
