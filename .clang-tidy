@@ -4,7 +4,10 @@ Checks: >
   clang-analyzer-*,
   modernize-*,
   performance-*,
-  readability-*
+  readability-*,
+  -modernize-use-trailing-return-type,
+  -readability-magic-numbers,
+  -modernize-raw-string-literal
 WarningsAsErrors: ''
 HeaderFilterRegex: '.*'
 FormatStyle: file
