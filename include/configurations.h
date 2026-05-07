@@ -17,7 +17,8 @@ class property {
 
     property(const std::string& key, const std::any& val) : m_key(key), m_value(val) {}
 
-    inline std::string hash_key() const {
+    // cppcheck-suppress returnByReference
+    [[nodiscard]] inline std::string hash_key() const {
 
         return m_key;
     }
